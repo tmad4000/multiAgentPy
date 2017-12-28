@@ -16,19 +16,38 @@ red = (255,0,0)
 car_width = 73
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
-pygame.display.set_caption('A bit Racey')
+pygame.display.set_caption('MultiAgent Sim')
 clock = pygame.time.Clock()
 
-carImg = pygame.image.load('racecar.gif')
+# carImg = pygame.image.load('racecar.gif')
 
+
+
+class Car:
+    def __init__(x=display_width * 0.45, y=display_height * 0.8):
+        self.x = x
+        self.y = y
+
+        self.x_changeLeft = -5
+        self.x_changeRight = 5
+    
+    def nudgeLeft():
+        self.x += self.x_changeLeft
+
+    def nudgeRight():
+        self.x += self.x_changeRight
+
+
+        
 #######
 def things(thingx, thingy, thingw, thingh, color):
     pygame.draw.rect(gameDisplay, color, [thingx, thingy, thingw, thingh])
 #######
+    
 
 
 def car(x,y):
-    circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(x), int(y)), 15, 1)
+    circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(x), int(y)), int(car_width/2), 1)
 
     # gameDisplay.blit(carImg,(x,y))
 
