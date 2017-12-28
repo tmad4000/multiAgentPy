@@ -78,10 +78,11 @@ def crash():
     message_display('You Crashed')
     
 def game_loop():
-    x = (display_width * 0.45)
-    y = (display_height * 0.8)
+    theCar=Car()
+    # x = (display_width * 0.45)
+    # y = (display_height * 0.8)
 
-    x_change = 0
+    # x_change = 0
 ######
     thing_startx = random.randrange(0, display_width)
     thing_starty = -600
@@ -93,13 +94,24 @@ def game_loop():
 
     while not gameExit:
 
+
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_LEFT]:
+        # if event.key == pygame.K_LEFT:
+            # x_change = -5
+            theCar.nudgeLeft()
+        if pressed[pygame.K_RIGHT]:                    
+        # if event.key == pygame.K_RIGHT:
+            # x_change = 5
+            theCar.nudgeRight()     
+            
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
+                
             if event.type == pygame.KEYDOWN:
-                CMD=310
+                # CMD=310
                 Q=113 
                 
                 if (pygame.key.get_mods() & pygame.KMOD_META) and event.key == 113:
@@ -109,25 +121,23 @@ def game_loop():
 
                 
                 # print(event.key)
-                if event.key == pygame.K_LEFT:
-                    x_change = -5
-                if event.key == pygame.K_RIGHT:
-                    x_change = 5
+               
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    x_change = 0
+            # if event.type == pygame.KEYUP:
+            #     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+            #         x_change = 0
 
-        x += x_change
+        # x += x_change
         gameDisplay.fill(white)
 
      ##########
         # things(thingx, thingy, thingw, thingh, color)
         things(thing_startx, thing_starty, thing_width, thing_height, black)
         thing_starty += thing_speed
-        car(x,y)
+        # car(x,y)
+        theCar.draw()
      ##########
-        if x > display_width - car_width or x < 0:
+        if theCar.x > display_width - theCar.car_width or theCar.x < 0:
             crash()
 
         if thing_starty > display_height:
