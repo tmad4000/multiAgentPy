@@ -24,18 +24,23 @@ clock = pygame.time.Clock()
 
 
 class Car:
-    def __init__(x=display_width * 0.45, y=display_height * 0.8):
+    def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
         self.x = x
         self.y = y
 
         self.x_changeLeft = -5
         self.x_changeRight = 5
+        self.car_width = 73
     
-    def nudgeLeft():
+    def nudgeLeft(self):
         self.x += self.x_changeLeft
 
-    def nudgeRight():
+    def nudgeRight(self):
         self.x += self.x_changeRight
+
+    def draw(self):
+        circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.car_width/2), 1)
+        
 
 
         
