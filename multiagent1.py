@@ -57,17 +57,28 @@ def message_display(text):
 
 def crash():
     message_display('You Crashed')
+
+currId=0
     
 def game_loop():
-    objects=[]
+    objects={}
 
     def registerObject(o):
-        objects.append(o)
+        global currId
+        objects[str(currId)]=o
+        currId+=1
+        o._regId=str(currId)
+
+    def delObject(o):
+        # print(objects)
+        if(str(o._regId) in objects): #if not deleted        
+            del objects[str(o._regId)]
 
     def tick():
-        for o in objects:
-            o.tick()
-            o.draw()
+        for k,o in list(objects.items()):
+            if(k in objects): #if not deleted
+                o.tick()
+                o.draw()
             
 
 
@@ -110,7 +121,7 @@ def game_loop():
 
     class Car(Obj):
         def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
-            super().__init__(x,y,w=73,h=73, color=black, speed=20, acc=20, heading=0, vx=0,vy=0)
+            super().__init__(x,y,w=73,h=73, color=black, speed=20, acc=10, heading=0, vx=0,vy=0)
             self.gunHeat=0
 
         def nudgeLeft(self):
@@ -185,9 +196,14 @@ def game_loop():
             dy=self.my-self.y
             dist=math.sqrt((dx)**2+(dy)**2)
             
-            self.headCos=dx/(dist)
-            self.headSin=dy/(dist)
-            self.heading=math.atan2(dy,dx)
+            if(dist!=0):
+                self.headCos=dx/(dist)
+                self.headSin=dy/(dist)
+                self.heading=math.atan2(dy,dx)
+            else:
+                self.headCos=self.headCos or 0
+                self.headSin=self.headSin or 0
+                self.heading=self.heading or 0
             
             #mousedotinternal        
             pygame.draw.circle(gameDisplay, red, (int(self.x+self.headCos*self.w/2), int(self.y+self.headSin*self.w/2)), int(10/2), 1)
@@ -226,9 +242,8 @@ def game_loop():
             super().tick()
             
 
-            # if self.y > display_height:
-            #     self.y = 0 - self.h
-            #     self.x = random.randrange(0,display_width)
+            if self.y > display_height or self.y<0 or self.x > display_width or self.x<0:
+                delObject(self)
 
         def draw(self):        
             # circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.car_width/2), 1)
