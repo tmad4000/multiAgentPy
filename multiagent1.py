@@ -29,12 +29,19 @@ class Car:
         self.x = x
         self.y = y
 
+        self.vx = 0
+        self.vy = 0
+
         self.x_changeLeft = -5
         self.x_changeRight = 5
         self.w = 73
         self.speed=20
         self.mx=0
         self.my=0
+
+        self.heading=0
+        self.headCos=math.cos(heading)
+        self.headSin=math.sin(heading)
     
     def nudgeLeft(self):
         self.x -= self.speed
@@ -43,6 +50,7 @@ class Car:
         self.x += self.speed
 
     def nudgeUp(self):
+        # self.y -= self.speed
         self.y -= self.speed
     
     def nudgeDown(self):
@@ -50,6 +58,10 @@ class Car:
 
 
     def tick(self):
+
+        self.x += self.vx
+        self.y += self.vy
+
         (mx,my)=pygame.mouse.get_pos()
         self.mx=mx
         self.my=my
@@ -62,10 +74,12 @@ class Car:
         dx=self.mx-self.x
         dy=self.my-self.y
         dist=math.sqrt((dx)**2+(dy)**2)
-        print(dist)
-        cos=dx/(dist)
-        sin=dy/(dist)
-        circle = pygame.draw.circle(gameDisplay, red, (int(self.x+cos*self.w/2), int(self.y+sin*self.w/2)), int(10/2), 1)
+        
+        self.headCos=dx/(dist)
+        self.headSin=dy/(dist)
+        self.heading=math.atan2(dy,dx)
+        
+        circle = pygame.draw.circle(gameDisplay, red, (int(self.x+headCos*self.w/2), int(self.y+headSin*self.w/2)), int(10/2), 1)
         
 
 
