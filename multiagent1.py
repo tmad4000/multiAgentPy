@@ -3,6 +3,7 @@
 import pygame
 import time
 import random
+import math
 
 pygame.init()
 
@@ -13,7 +14,7 @@ black = (0,0,0)
 white = (255,255,255)
 red = (255,0,0)
 
-car_width = 73
+# car_width = 73
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('MultiAgent Sim')
@@ -30,14 +31,16 @@ class Car:
 
         self.x_changeLeft = -5
         self.x_changeRight = 5
-        self.car_width = 73
-        self.speed=5
+        self.w = 73
+        self.speed=20
+        self.mx=0
+        self.my=0
     
     def nudgeLeft(self):
-        self.x += self.x_changeLeft
+        self.x -= self.speed
     
     def nudgeRight(self):
-        self.x += self.x_changeRight
+        self.x += self.speed
 
     def nudgeUp(self):
         self.y -= self.speed
@@ -46,22 +49,37 @@ class Car:
         self.y += self.speed
 
 
+    def tick(self):
+        (mx,my)=pygame.mouse.get_pos()
+        self.mx=mx
+        self.my=my
+        circle = pygame.draw.circle(gameDisplay, red, (int(mx), int(my)), int(20/2), 1)
+
     def draw(self):
-        circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.car_width/2), 1)
+        circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.w/2), 1)
+        circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(10/2), 1)
+        
+        dx=self.mx-self.x
+        dy=self.my-self.y
+        dist=math.sqrt((dx)**2+(dy)**2)
+        print(dist)
+        cos=dx/(dist)
+        sin=dy/(dist)
+        circle = pygame.draw.circle(gameDisplay, red, (int(self.x+cos*self.w/2), int(self.y+sin*self.w/2)), int(10/2), 1)
         
 
 
 class Obstacle:
     def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
         thing_startx = random.randrange(0, display_width)
-        thing_starty = -600
+        thing_starty = -100
         
         self.x = thing_startx
         self.y = thing_starty
         self.color=black
        
         self.vx = 0
-        self.vy = 7
+        self.vy = 14
 
         self.w = 100
         self.h = 100
@@ -83,8 +101,8 @@ class Obstacle:
 
         
 #######
-def things(thingx, thingy, thingw, thingh, color):
-    pygame.draw.rect(gameDisplay, color, [thingx, thingy, thingw, thingh])
+# def things(thingx, thingy, thingw, thingh, color):
+#     pygame.draw.rect(gameDisplay, color, [thingx, thingy, thingw, thingh])
 #######
     
 
@@ -136,18 +154,18 @@ def game_loop():
 
         #left and right motion
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_LEFT]:
+        if pressed[pygame.K_LEFT] or pressed[pygame.K_a]:
         # if event.key == pygame.K_LEFT:
             # x_change = -5
             theCar.nudgeLeft()
-        if pressed[pygame.K_RIGHT]:                    
+        if pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:                    
         # if event.key == pygame.K_RIGHT:
             # x_change = 5
             theCar.nudgeRight()     
             
-        if pressed[pygame.K_UP]:                    
+        if pressed[pygame.K_UP] or pressed[pygame.K_w]:                    
             theCar.nudgeUp()     
-        if pressed[pygame.K_DOWN]:                    
+        if pressed[pygame.K_DOWN] or pressed[pygame.K_s]:                    
             theCar.nudgeDown()     
             
 
@@ -183,12 +201,13 @@ def game_loop():
         # things(thingx, thingy, thingw, thingh, color)
         # things(thing_startx, thing_starty, thing_width, thing_height, black)
         obstacle.tick()
+        theCar.tick()
         # thing_starty += thing_speed
         # car(x,y)
         obstacle.draw()
         theCar.draw()
      ##########
-        if theCar.x > display_width - theCar.car_width or theCar.x < 0:
+        if theCar.x > display_width - theCar.w or theCar.x < 0:
             crash()
 
         # if thing_starty > display_height:
