@@ -22,27 +22,48 @@ clock = pygame.time.Clock()
 
 # carImg = pygame.image.load('racecar.gif')
 
-
-
-class Car:
-    def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
+class Obj:
+    def __init__(self,x, y, w=50,h=50, color=black,  speed=20, acc=20, heading=0, vx=0,vy=0):
         self.x = x
         self.y = y
 
-        self.vx = 0
-        self.vy = 0
+        self.vx = vx
+        self.vy = vy
 
-        self.x_changeLeft = -5
-        self.x_changeRight = 5
-        self.w = 73
-        self.speed=20
-        self.acc=20
-        self.mx=0
-        self.my=0
+        self.w = w
+        self.h = h
+        self.color=color
 
-        self.heading=0
+        self.speed=speed
+        self.acc=acc
+
+        self.heading=heading
         self.headCos=math.cos(self.heading)
         self.headSin=math.sin(self.heading)
+
+    def tick(self):
+        self.x += self.vx
+        self.y += self.vy
+
+        #friction
+        self.vx*=.9
+        self.vy*=.9
+
+        self.vx*=0
+        self.vy*=0
+
+
+    def drawRect(self):
+        pygame.draw.rect(gameDisplay, self.color, [int(self.x), int(self.y), int(self.w), int(self.h)])
+    
+    def draw(self):
+        pass
+      
+    
+
+class Car(Obj):
+    def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
+        super().__init__(x,y,w=73,h=73, color=black, speed=20, acc=20, heading=0, vx=0,vy=0)
     
     def nudgeLeft(self):
 
@@ -75,16 +96,16 @@ class Car:
 
 
     def tick(self):
+        super().tick()
+        # self.x += self.vx
+        # self.y += self.vy
 
-        self.x += self.vx
-        self.y += self.vy
+        # #friction
+        # self.vx*=.9
+        # self.vy*=.9
 
-        #friction
-        self.vx*=.9
-        self.vy*=.9
-
-        self.vx*=0
-        self.vy*=0
+        # self.vx*=0
+        # self.vy*=0
 
 
         (mx,my)=pygame.mouse.get_pos()
@@ -108,21 +129,13 @@ class Car:
         
 
 
-class Obstacle:
+class Obstacle(Obj):
     def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
         thing_startx = random.randrange(0, display_width)
         thing_starty = -100
+
+        super().__init__(thing_startx,thing_starty,w=100,h=100, color=black, speed=20, acc=20, heading=0, vx=0,vy=14)
         
-        self.x = thing_startx
-        self.y = thing_starty
-        self.color=black
-       
-        self.vx = 0
-        self.vy = 14
-
-        self.w = 100
-        self.h = 100
-
 
     def tick(self): 
         self.x += self.vx
@@ -220,6 +233,9 @@ def game_loop():
         if pressed[pygame.K_DOWN] or pressed[pygame.K_s]:                    
             theCar.nudgeDown()     
             
+        if pygame.mouse.get_pressed()[0]:  
+            pass
+
 
         for event in pygame.event.get():
 
