@@ -111,7 +111,8 @@ def game_loop():
     class Car(Obj):
         def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
             super().__init__(x,y,w=73,h=73, color=black, speed=20, acc=20, heading=0, vx=0,vy=0)
-        
+            self.gunHeat=0
+
         def nudgeLeft(self):
 
 
@@ -155,16 +156,23 @@ def game_loop():
             self.vy*=0
 
 
+
             (mx,my)=pygame.mouse.get_pos()
             self.mx=mx
             self.my=my
             #mousedotexternal
             pygame.draw.circle(gameDisplay, red, (int(mx), int(my)), int(20/2), 1)
 
+            if self.gunHeat>0:
+                self.gunHeat-=1
 
-            if pygame.mouse.get_pressed()[0]:  
-                registerObject(Bullet(self.x,self.y,self.heading))
+            if pygame.mouse.get_pressed()[0]: 
+                if self.gunHeat<=0: 
+                    self.fire()
 
+        def fire(self):
+            registerObject(Bullet(self.x,self.y,self.heading))
+            self.gunHeat+=8
 
         def draw(self):
             #outside
