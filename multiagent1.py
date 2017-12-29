@@ -13,6 +13,7 @@ display_height = 600
 black = (0,0,0)
 white = (255,255,255)
 red = (255,0,0)
+green = (0,200,0)
 
 # car_width = 73
 
@@ -21,134 +22,6 @@ pygame.display.set_caption('MultiAgent Sim')
 clock = pygame.time.Clock()
 
 # carImg = pygame.image.load('racecar.gif')
-
-class Obj:
-    def __init__(self,x, y, w=50,h=50, color=black,  speed=20, acc=20, heading=0, vx=0,vy=0):
-        self.x = x
-        self.y = y
-
-        self.vx = vx
-        self.vy = vy
-
-        self.w = w
-        self.h = h
-        self.color=color
-
-        self.speed=speed
-        self.acc=acc
-
-        self.heading=heading
-        self.headCos=math.cos(self.heading)
-        self.headSin=math.sin(self.heading)
-
-    def tick(self):
-        self.x += self.vx
-        self.y += self.vy
-
-        #friction
-        self.vx*=.9
-        self.vy*=.9
-
-        self.vx*=0
-        self.vy*=0
-
-
-    def drawRect(self):
-        pygame.draw.rect(gameDisplay, self.color, [int(self.x), int(self.y), int(self.w), int(self.h)])
-    
-    def draw(self):
-        pass
-      
-    
-
-class Car(Obj):
-    def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
-        super().__init__(x,y,w=73,h=73, color=black, speed=20, acc=20, heading=0, vx=0,vy=0)
-    
-    def nudgeLeft(self):
-
-
-        self.vy+= -self.acc*self.headCos
-        self.vx+= self.acc*self.headSin
-
-        # self.x -= self.speed
-    
-    def nudgeRight(self):
-
-        self.vy-= -self.acc*self.headCos
-        self.vx-= self.acc*self.headSin
-
-#        self.x += self.speed
-
-    def nudgeUp(self):
-        self.vx+= self.acc*self.headCos
-        self.vy+= self.acc*self.headSin
-
-        # self.y -= self.speed
-        # self.y -= self.speed
-    
-    def nudgeDown(self):
-
-        self.vx-= self.acc*self.headCos
-        self.vy-= self.acc*self.headSin
-
-        # self.y += self.speed
-
-
-    def tick(self):
-        super().tick()
-        # self.x += self.vx
-        # self.y += self.vy
-
-        # #friction
-        # self.vx*=.9
-        # self.vy*=.9
-
-        # self.vx*=0
-        # self.vy*=0
-
-
-        (mx,my)=pygame.mouse.get_pos()
-        self.mx=mx
-        self.my=my
-        circle = pygame.draw.circle(gameDisplay, red, (int(mx), int(my)), int(20/2), 1)
-
-    def draw(self):
-        circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.w/2), 1)
-        circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(10/2), 1)
-        
-        dx=self.mx-self.x
-        dy=self.my-self.y
-        dist=math.sqrt((dx)**2+(dy)**2)
-        
-        self.headCos=dx/(dist)
-        self.headSin=dy/(dist)
-        self.heading=math.atan2(dy,dx)
-        
-        circle = pygame.draw.circle(gameDisplay, red, (int(self.x+self.headCos*self.w/2), int(self.y+self.headSin*self.w/2)), int(10/2), 1)
-        
-
-
-class Obstacle(Obj):
-    def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
-        thing_startx = random.randrange(0, display_width)
-        thing_starty = -100
-
-        super().__init__(thing_startx,thing_starty,w=100,h=100, color=black, speed=20, acc=20, heading=0, vx=0,vy=14)
-        
-
-    def tick(self): 
-        self.x += self.vx
-        self.y += self.vy
-
-        if self.y > display_height:
-            self.y = 0 - self.h
-            self.x = random.randrange(0,display_width)
-
-    def draw(self):        
-        # circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.car_width/2), 1)
-        # things(thingx, thingy, thingw, thingh, color):
-        pygame.draw.rect(gameDisplay, self.color, [int(self.x), int(self.y), int(self.w), int(self.h)])
 
 
         
@@ -196,6 +69,167 @@ def game_loop():
             o.tick()
             o.draw()
             
+
+
+
+    class Obj:
+        def __init__(self,x, y, w=50,h=50, color=black,  speed=20, acc=20, heading=0, vx=0,vy=0):
+            self.x = x
+            self.y = y
+
+            self.vx = vx
+            self.vy = vy
+
+            self.w = w
+            self.h = h
+            self.color=color
+
+            self.speed=speed
+            self.acc=acc
+
+            self.heading=heading
+            self.headCos=math.cos(self.heading)
+            self.headSin=math.sin(self.heading)
+
+        def tick(self):
+            self.x += self.vx
+            self.y += self.vy
+
+
+
+        def drawRect(self):
+            pygame.draw.rect(gameDisplay, self.color, [int(self.x), int(self.y), int(self.w), int(self.h)])
+        
+        def drawCirc(self):
+            pygame.draw.circle(gameDisplay, self.color, (int(self.x), int(self.y)), int(self.w/2), 1)
+                
+        def draw(self):
+            pass
+        
+        
+
+    class Car(Obj):
+        def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
+            super().__init__(x,y,w=73,h=73, color=black, speed=20, acc=20, heading=0, vx=0,vy=0)
+        
+        def nudgeLeft(self):
+
+
+            self.vy+= -self.acc*self.headCos
+            self.vx+= self.acc*self.headSin
+
+            # self.x -= self.speed
+        
+        def nudgeRight(self):
+
+            self.vy-= -self.acc*self.headCos
+            self.vx-= self.acc*self.headSin
+
+    #        self.x += self.speed
+
+        def nudgeUp(self):
+            self.vx+= self.acc*self.headCos
+            self.vy+= self.acc*self.headSin
+
+            # self.y -= self.speed
+            # self.y -= self.speed
+        
+        def nudgeDown(self):
+
+            self.vx-= self.acc*self.headCos
+            self.vy-= self.acc*self.headSin
+
+            # self.y += self.speed
+
+
+        def tick(self):
+            super().tick()
+            # self.x += self.vx
+            # self.y += self.vy
+
+            #friction
+            self.vx*=.9
+            self.vy*=.9
+
+            self.vx*=0
+            self.vy*=0
+
+
+            (mx,my)=pygame.mouse.get_pos()
+            self.mx=mx
+            self.my=my
+            #mousedotexternal
+            pygame.draw.circle(gameDisplay, red, (int(mx), int(my)), int(20/2), 1)
+
+
+            if pygame.mouse.get_pressed()[0]:  
+                registerObject(Bullet(self.x,self.y,self.heading))
+
+
+        def draw(self):
+            #outside
+            pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.w/2), 1)
+            
+            #center
+            pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(10/2), 1)
+            
+            dx=self.mx-self.x
+            dy=self.my-self.y
+            dist=math.sqrt((dx)**2+(dy)**2)
+            
+            self.headCos=dx/(dist)
+            self.headSin=dy/(dist)
+            self.heading=math.atan2(dy,dx)
+            
+            #mousedotinternal        
+            pygame.draw.circle(gameDisplay, red, (int(self.x+self.headCos*self.w/2), int(self.y+self.headSin*self.w/2)), int(10/2), 1)
+            
+
+
+    class Obstacle(Obj):
+        def __init__(self,x=display_width * 0.45, y=display_height * 0.8):
+            thing_startx = random.randrange(0, display_width)
+            thing_starty = -100
+
+            super().__init__(thing_startx,thing_starty,w=100,h=100, color=black, speed=20, acc=20, heading=0, vx=0,vy=14)
+            
+
+        def tick(self): 
+            super().tick()
+
+            if self.y > display_height:
+                self.y = 0 - self.h
+                self.x = random.randrange(0,display_width)
+
+        def draw(self):        
+            # circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.car_width/2), 1)
+            # things(thingx, thingy, thingw, thingh, color):
+            pygame.draw.rect(gameDisplay, self.color, [int(self.x), int(self.y), int(self.w), int(self.h)])
+
+
+    class Bullet(Obj):
+        def __init__(self,x, y,heading):
+            super().__init__(x,y,w=5,h=5, color=green, speed=30, acc=0, heading=heading)
+            self.vx=math.cos(self.heading)*self.speed
+            self.vy=math.sin(self.heading)*self.speed
+            
+
+        def tick(self): 
+            super().tick()
+            
+
+            # if self.y > display_height:
+            #     self.y = 0 - self.h
+            #     self.x = random.randrange(0,display_width)
+
+        def draw(self):        
+            # circle = pygame.draw.circle(gameDisplay, (0, 0, 0), (int(self.x), int(self.y)), int(self.car_width/2), 1)
+            # things(thingx, thingy, thingw, thingh, color):
+            # pygame.draw.rect(gameDisplay, self.color, [int(self.x), int(self.y), int(self.w), int(self.h)])
+            self.drawCirc()
+
+
+
     theCar=Car()
     obstacle=Obstacle()
     registerObject(theCar)
@@ -233,8 +267,6 @@ def game_loop():
         if pressed[pygame.K_DOWN] or pressed[pygame.K_s]:                    
             theCar.nudgeDown()     
             
-        if pygame.mouse.get_pressed()[0]:  
-            pass
 
 
         for event in pygame.event.get():
