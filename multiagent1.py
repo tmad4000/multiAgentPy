@@ -173,18 +173,31 @@ def crash():
     message_display('You Crashed')
     
 def game_loop():
+    objects=[]
+
+    def registerObject(o):
+        objects.append(o)
+
+    def tick():
+        for o in objects:
+            o.tick()
+            o.draw()
+            
     theCar=Car()
     obstacle=Obstacle()
+    registerObject(theCar)
+    registerObject(obstacle)
+
     # x = (display_width * 0.45)
     # y = (display_height * 0.8)
 
     # x_change = 0
 ######
-    thing_startx = random.randrange(0, display_width)
-    thing_starty = -600
-    thing_speed = 7
-    thing_width = 100
-    thing_height = 100
+    # thing_startx = random.randrange(0, display_width)
+    # thing_starty = -600
+    # thing_speed = 7
+    # thing_width = 100
+    # thing_height = 100
 ######
     gameExit = False
 
@@ -219,6 +232,7 @@ def game_loop():
                 # CMD=310
                 Q=113 
                 
+                #cmd q
                 if (pygame.key.get_mods() & pygame.KMOD_META) and event.key == 113:
                     exit()
                 
@@ -239,14 +253,17 @@ def game_loop():
      ##########
         # things(thingx, thingy, thingw, thingh, color)
         # things(thing_startx, thing_starty, thing_width, thing_height, black)
-        obstacle.tick()
-        theCar.tick()
+        # obstacle.tick()
+        # theCar.tick()
         # thing_starty += thing_speed
         # car(x,y)
-        obstacle.draw()
-        theCar.draw()
+        # obstacle.draw()
+        
      ##########
-        if theCar.x > display_width - theCar.w or theCar.x < 0:
+
+        tick()
+
+        if theCar.x > display_width - theCar.w or theCar.x < 0:            
             crash()
 
         # if thing_starty > display_height:
